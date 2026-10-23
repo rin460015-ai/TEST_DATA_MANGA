@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book Wishlist Survey</title>
+<meta name="description" content="Tell us your language and the books you want to read.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e9; --card:#fffdf9; --ink:#22201c; --muted:#6b645a;
+    --line:#e3dacb; --accent:#b4462b; --accent-ink:#fff; --focus:#e9a23b;
+    --ok:#2f6b46; --err:#a8321e;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#191714; --card:#221f1b; --ink:#f1ebe1; --muted:#a69d90;
+      --line:#3a352e; --accent:#e0714f; --accent-ink:#1a1714; --focus:#f0b65a;
+      --ok:#7cc79a; --err:#f08a72; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI","Noto Sans","Noto Sans CJK SC","Noto Sans KR",sans-serif;}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 16px 64px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px}
+  .brand{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:18px;letter-spacing:.2px}
+  .brand span{color:var(--accent)}
+  select,input,textarea{font:inherit;color:inherit}
+  .langsel{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,40px);line-height:1.15;margin:0 0 12px}
+  .lead{color:var(--muted);margin:0 0 28px}
+  form{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+  fieldset{border:0;padding:0;margin:0 0 24px}
+  legend,label.q{display:block;font-weight:600;margin-bottom:8px}
+  .hint{color:var(--muted);font-size:14px;font-weight:400}
+  .field{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .field:focus,.langsel:focus,button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip input{position:absolute;opacity:0;pointer-events:none}
+  .chip span{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);cursor:pointer;font-size:15px}
+  .chip input:checked + span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .chip input:focus-visible + span{outline:3px solid var(--focus)}
+  .book{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px}
+  @media (max-width:520px){.book{grid-template-columns:1fr auto}.book .author{grid-column:1}}
+  .icon-btn{border:1px solid var(--line);background:transparent;border-radius:10px;width:42px;cursor:pointer;color:var(--muted);font-size:18px}
+  .link-btn{border:0;background:none;color:var(--accent);font-weight:600;cursor:pointer;padding:4px 0}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted)}
+  .consent input{margin-top:4px}
+  .submit{width:100%;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:16px;cursor:pointer}
+  .submit[disabled]{opacity:.6;cursor:wait}
+  .msg{margin-top:14px;font-size:15px}
+  .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
+  .hp{position:absolute;left:-9999px}
+  .thanks{text-align:center;padding:40px 16px}
+  .thanks h2{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:30px;margin:0 0 8px}
+  footer{margin-top:24px;color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Book<span>·</span>Wish</div>
+    <select id="uiLang" class="langsel" aria-label="Language"></select>
+  </header>
+
+  <main id="main">
+    <h1 data-i18n="title"></h1>
+    <p class="lead" data-i18n="lead"></p>
+
+    <form id="form" novalidate>
+      <fieldset>
+        <label class="q" for="nativeLang" data-i18n="qNative"></label>
+        <select id="nativeLang" class="field" required></select>
+        <input id="nativeOther" class="field" style="display:none;margin-top:8px" maxlength="60">
+      </fieldset>
+
+      <fieldset>
+        <legend><span data-i18n="qRead"></span> <span class="hint" data-i18n="multi"></span></legend>
+        <div class="chips" id="readLangs"></div>
+      </fieldset>
+
+      <fieldset>
+        <label class="q" for="country"><span data-i18n="qCountry"></span> <span class="hint" data-i18n="optional"></span></label>
+        <input id="country" class="field" maxlength="60" autocomplete="country-name">
+      </fieldset>
+
+      <fieldset>
+        <legend><span data-i18n="qBooks"></span> <span class="hint" data-i18n="booksHint"></span></legend>
+        <div id="books"></div>
+        <button type="button" class="link-btn" id="addBook" data-i18n="addBook"></button>
+      </fieldset>
+
+      <fieldset>
+        <label class="q" for="comment"><span data-i18n="qComment"></span> <span class="hint" data-i18n="optional"></span></label>
+        <textarea id="comment" class="field" rows="3" maxlength="1000"></textarea>
+      </fieldset>
+
+      <input class="hp" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <fieldset>
+        <label class="consent"><input type="checkbox" id="consent" required><span data-i18n="consent"></span></label>
+      </fieldset>
+
+      <button class="submit" id="submit" type="submit" data-i18n="submit"></button>
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <footer data-i18n="footer"></footer>
+</div>
+
+<script>
+/* ============ 設定 ============ */
+// Google Apps Script をデプロイして得た「ウェブアプリ URL」に置き換えてください
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbyKY1BJAN5KPujjricskTuYboau29gasydo_YOMilMr/dev";
+const MAX_BOOKS = 10;
+
+/* 回答者が選ぶ言語（各言語の自称表記なので翻訳不要） */
+const LANGS = [
+  ["en","English"],["zh-Hans","简体中文"],["zh-Hant","繁體中文"],["ko","한국어"],
+  ["ja","日本語"],["es","Español"],["pt","Português"],["fr","Français"],["de","Deutsch"],
+  ["it","Italiano"],["ru","Русский"],["ar","العربية"],["hi","हिन्दी"],["id","Bahasa Indonesia"],
+  ["vi","Tiếng Việt"],["th","ไทย"],["tl","Filipino"],["tr","Türkçe"],["other","…"]
+];
+
+/* 画面の表示文言 */
+const T = {
+ en:{otherOpt:"Other",title:"Which books do you want to read?",lead:"Tell us your language and the books you'd love to read. It takes about one minute.",
+  qNative:"Your first language",choose:"Select…",otherLang:"Please type your language",qRead:"Languages you can read books in",multi:"(choose all that apply)",
+  qCountry:"Country / region",optional:"(optional)",qBooks:"Books you want to read",booksHint:"(title and author)",title_ph:"Book title",author_ph:"Author",
+  addBook:"+ Add another book",qComment:"Anything else?",consent:"I agree that my answers will be stored and used anonymously to choose which books to provide.",
+  submit:"Send",sending:"Sending…",ok:"Thank you!",okBody:"Your answers have been received.",again:"Answer again",
+  errNative:"Please select your first language.",errRead:"Please choose at least one reading language.",errBook:"Please enter at least one book title.",
+  errConsent:"Please check the agreement box.",errSend:"Could not send. Please check your connection and try again.",remove:"Remove",footer:"No personal information such as name or email is collected."},
+ "zh-Hans":{otherOpt:"其他",title:"你想读哪些书？",lead:"告诉我们你使用的语言和想读的书，大约只需一分钟。",
+  qNative:"你的母语",choose:"请选择…",otherLang:"请输入你的语言",qRead:"你能阅读书籍的语言",multi:"（可多选）",
+  qCountry:"国家 / 地区",optional:"（选填）",qBooks:"想读的书",booksHint:"（书名和作者）",title_ph:"书名",author_ph:"作者",
+  addBook:"+ 再添加一本",qComment:"其他意见",consent:"我同意我的回答将被匿名保存，并用于决定提供哪些书籍。",
+  submit:"提交",sending:"正在提交…",ok:"谢谢！",okBody:"我们已收到你的回答。",again:"再次填写",
+  errNative:"请选择你的母语。",errRead:"请至少选择一种阅读语言。",errBook:"请至少填写一本书名。",
+  errConsent:"请勾选同意。",errSend:"提交失败，请检查网络后重试。",remove:"删除",footer:"本调查不收集姓名、邮箱等个人信息。"},
+ "zh-Hant":{otherOpt:"其他",title:"你想讀哪些書？",lead:"告訴我們你使用的語言和想讀的書，大約只需一分鐘。",
+  qNative:"你的母語",choose:"請選擇…",otherLang:"請輸入你的語言",qRead:"你能閱讀書籍的語言",multi:"（可複選）",
+  qCountry:"國家 / 地區",optional:"（選填）",qBooks:"想讀的書",booksHint:"（書名和作者）",title_ph:"書名",author_ph:"作者",
+  addBook:"+ 再新增一本",qComment:"其他意見",consent:"我同意我的回答將以匿名方式保存，並用於決定提供哪些書籍。",
+  submit:"送出",sending:"傳送中…",ok:"謝謝！",okBody:"我們已收到你的回答。",again:"再次填寫",
+  errNative:"請選擇你的母語。",errRead:"請至少選擇一種閱讀語言。",errBook:"請至少填寫一本書名。",
+  errConsent:"請勾選同意。",errSend:"傳送失敗，請檢查網路後再試一次。",remove:"刪除",footer:"本調查不蒐集姓名、電子郵件等個人資料。"},
+ ko:{otherOpt:"기타",title:"어떤 책을 읽고 싶으신가요?",lead:"사용하는 언어와 읽고 싶은 책을 알려주세요. 약 1분 정도 걸립니다.",
+  qNative:"모국어",choose:"선택하세요…",otherLang:"언어를 입력해 주세요",qRead:"책을 읽을 수 있는 언어",multi:"(복수 선택 가능)",
+  qCountry:"국가 / 지역",optional:"(선택)",qBooks:"읽고 싶은 책",booksHint:"(제목과 저자)",title_ph:"책 제목",author_ph:"저자",
+  addBook:"+ 책 추가하기",qComment:"기타 의견",consent:"답변이 익명으로 저장되어 제공할 책을 정하는 데 사용되는 것에 동의합니다.",
+  submit:"보내기",sending:"보내는 중…",ok:"감사합니다!",okBody:"답변이 접수되었습니다.",again:"다시 응답하기",
+  errNative:"모국어를 선택해 주세요.",errRead:"읽을 수 있는 언어를 하나 이상 선택해 주세요.",errBook:"책 제목을 하나 이상 입력해 주세요.",
+  errConsent:"동의란에 체크해 주세요.",errSend:"전송하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.",remove:"삭제",footer:"이름이나 이메일 등 개인정보는 수집하지 않습니다."},
+ es:{otherOpt:"Otro",title:"¿Qué libros te gustaría leer?",lead:"Cuéntanos tu idioma y los libros que te gustaría leer. Solo toma un minuto.",
+  qNative:"Tu lengua materna",choose:"Selecciona…",otherLang:"Escribe tu idioma",qRead:"Idiomas en los que puedes leer libros",multi:"(elige todos los que correspondan)",
+  qCountry:"País / región",optional:"(opcional)",qBooks:"Libros que quieres leer",booksHint:"(título y autor)",title_ph:"Título del libro",author_ph:"Autor",
+  addBook:"+ Añadir otro libro",qComment:"¿Algo más?",consent:"Acepto que mis respuestas se guarden y se usen de forma anónima para elegir qué libros ofrecer.",
+  submit:"Enviar",sending:"Enviando…",ok:"¡Gracias!",okBody:"Hemos recibido tus respuestas.",again:"Responder de nuevo",
+  errNative:"Selecciona tu lengua materna.",errRead:"Elige al menos un idioma de lectura.",errBook:"Escribe al menos el título de un libro.",
+  errConsent:"Marca la casilla de aceptación.",errSend:"No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.",remove:"Quitar",footer:"No recopilamos datos personales como nombre o correo electrónico."},
+ pt:{otherOpt:"Outro",title:"Quais livros você quer ler?",lead:"Conte-nos seu idioma e os livros que gostaria de ler. Leva cerca de um minuto.",
+  qNative:"Sua língua materna",choose:"Selecione…",otherLang:"Digite seu idioma",qRead:"Idiomas em que você consegue ler livros",multi:"(escolha todos que se aplicam)",
+  qCountry:"País / região",optional:"(opcional)",qBooks:"Livros que você quer ler",booksHint:"(título e autor)",title_ph:"Título do livro",author_ph:"Autor",
+  addBook:"+ Adicionar outro livro",qComment:"Algo mais?",consent:"Concordo que minhas respostas sejam armazenadas e usadas de forma anônima para escolher quais livros oferecer.",
+  submit:"Enviar",sending:"Enviando…",ok:"Obrigado!",okBody:"Recebemos suas respostas.",again:"Responder novamente",
+  errNative:"Selecione sua língua materna.",errRead:"Escolha pelo menos um idioma de leitura.",errBook:"Informe pelo menos o título de um livro.",
+  errConsent:"Marque a caixa de concordância.",errSend:"Não foi possível enviar. Verifique sua conexão e tente novamente.",remove:"Remover",footer:"Não coletamos dados pessoais como nome ou e-mail."},
+ fr:{otherOpt:"Autre",title:"Quels livres aimeriez-vous lire ?",lead:"Indiquez-nous votre langue et les livres que vous aimeriez lire. Cela prend environ une minute.",
+  qNative:"Votre langue maternelle",choose:"Choisir…",otherLang:"Saisissez votre langue",qRead:"Langues dans lesquelles vous lisez des livres",multi:"(plusieurs choix possibles)",
+  qCountry:"Pays / région",optional:"(facultatif)",qBooks:"Livres que vous voulez lire",booksHint:"(titre et auteur)",title_ph:"Titre du livre",author_ph:"Auteur",
+  addBook:"+ Ajouter un autre livre",qComment:"Autre chose ?",consent:"J'accepte que mes réponses soient enregistrées et utilisées de manière anonyme pour choisir les livres proposés.",
+  submit:"Envoyer",sending:"Envoi…",ok:"Merci !",okBody:"Vos réponses ont bien été reçues.",again:"Répondre à nouveau",
+  errNative:"Veuillez choisir votre langue maternelle.",errRead:"Veuillez choisir au moins une langue de lecture.",errBook:"Veuillez saisir au moins un titre.",
+  errConsent:"Veuillez cocher la case d'accord.",errSend:"Échec de l'envoi. Vérifiez votre connexion et réessayez.",remove:"Supprimer",footer:"Aucune donnée personnelle (nom, e-mail) n'est collectée."},
+ ja:{otherOpt:"その他",title:"どんな本を読みたいですか？",lead:"あなたの言語と、読みたい本を教えてください。1分ほどで終わります。",
+  qNative:"あなたの第一言語",choose:"選択してください…",otherLang:"言語を入力してください",qRead:"本を読める言語",multi:"（複数選択可）",
+  qCountry:"国・地域",optional:"（任意）",qBooks:"読みたい本",booksHint:"（書名と著者）",title_ph:"書名",author_ph:"著者",
+  addBook:"＋ 本を追加",qComment:"その他ご意見",consent:"回答が匿名で保存され、提供する本を決めるために使われることに同意します。",
+  submit:"送信",sending:"送信中…",ok:"ありがとうございました！",okBody:"回答を受け付けました。",again:"もう一度回答する",
+  errNative:"第一言語を選択してください。",errRead:"読める言語を1つ以上選んでください。",errBook:"書名を1つ以上入力してください。",
+  errConsent:"同意欄にチェックしてください。",errSend:"送信できませんでした。通信環境を確認して再度お試しください。",remove:"削除",footer:"氏名やメールアドレスなどの個人情報は収集しません。"}
+};
+const UI_LANGS = [["en","English"],["zh-Hans","简体中文"],["zh-Hant","繁體中文"],["ko","한국어"],["es","Español"],["pt","Português"],["fr","Français"],["ja","日本語"]];
+
+/* ============ 動作 ============ */
+const $ = id => document.getElementById(id);
+let ui = detectLang();
+
+function detectLang(){
+  try{ const s = localStorage.getItem("uiLang"); if (s && T[s]) return s; }catch(e){}
+  const n = (navigator.language||"en").toLowerCase();
+  if (n.startsWith("zh")) return /tw|hk|mo|hant/.test(n) ? "zh-Hant" : "zh-Hans";
+  const base = n.split("-")[0];
+  return T[base] ? base : "en";
+}
+const t = k => (T[ui] && T[ui][k]) || T.en[k];
+
+function render(){
+  document.documentElement.lang = ui;
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  $("nativeOther").placeholder = t("otherLang");
+  const nl = $("nativeLang"), keep = nl.value;
+  nl.innerHTML = ""; nl.append(new Option(t("choose"), ""));
+  LANGS.forEach(([c,n]) => nl.append(new Option(c==="other" ? t("otherOpt") : n, c)));
+  nl.value = keep;
+  document.querySelectorAll(".book").forEach(row => {
+    row.querySelector(".title").placeholder = t("title_ph");
+    row.querySelector(".author").placeholder = t("author_ph");
+    row.querySelector(".icon-btn").setAttribute("aria-label", t("remove"));
+  });
+  if ($("againBtn")) { $("againBtn").textContent = t("again"); }
+}
+
+function buildStatic(){
+  const sel = $("uiLang");
+  UI_LANGS.forEach(([c,n]) => sel.append(new Option(n, c)));
+  sel.value = ui;
+  sel.onchange = () => { ui = sel.value; try{localStorage.setItem("uiLang", ui);}catch(e){} render(); };
+
+  const box = $("readLangs");
+  LANGS.filter(l => l[0] !== "other").forEach(([c,n]) => {
+    const lab = document.createElement("label"); lab.className = "chip";
+    lab.innerHTML = `<input type="checkbox" value="${c}"><span></span>`;
+    lab.querySelector("span").textContent = n;
+    box.append(lab);
+  });
+  $("nativeLang").onchange = e => {
+    $("nativeOther").style.display = e.target.value === "other" ? "block" : "none";
+    // 第一言語は「読める言語」にも自動でチェック
+    const cb = box.querySelector(`input[value="${e.target.value}"]`);
+    if (cb) cb.checked = true;
+  };
+  $("addBook").onclick = () => addBook(true);
+  addBook(); addBook();
+}
+
+function addBook(focus){
+  const list = $("books");
+  if (list.children.length >= MAX_BOOKS) return;
+  const row = document.createElement("div"); row.className = "book";
+  row.innerHTML = `<input class="field title" maxlength="200"><input class="field author" maxlength="120"><button type="button" class="icon-btn">×</button>`;
+  row.querySelector(".icon-btn").onclick = () => { if (list.children.length > 1) row.remove(); else { row.querySelectorAll("input").forEach(i=>i.value=""); } };
+  list.append(row); render();
+  if (focus) row.querySelector(".title").focus();
+  $("addBook").style.display = list.children.length >= MAX_BOOKS ? "none" : "";
+}
+
+function showMsg(text, kind){ const m = $("msg"); m.textContent = text; m.className = "msg " + (kind||""); }
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const native = $("nativeLang").value;
+  const reading = [...document.querySelectorAll("#readLangs input:checked")].map(i => i.value);
+  const books = [...document.querySelectorAll(".book")]
+    .map(r => ({title:r.querySelector(".title").value.trim(), author:r.querySelector(".author").value.trim()}))
+    .filter(b => b.title);
+  if (!native) return showMsg(t("errNative"), "err");
+  if (!reading.length) return showMsg(t("errRead"), "err");
+  if (!books.length) return showMsg(t("errBook"), "err");
+  if (!$("consent").checked) return showMsg(t("errConsent"), "err");
+
+  const payload = {
+    nativeLang: native === "other" ? "other:" + $("nativeOther").value.trim() : native,
+    readingLangs: reading,
+    country: $("country").value.trim(),
+    books,
+    comment: $("comment").value.trim(),
+    uiLang: ui,
+    browserLang: navigator.language || "",
+    website: $("website").value   // スパム対策（人間には見えない欄）
+  };
+
+  const btn = $("submit"); btn.disabled = true; btn.textContent = t("sending"); showMsg("");
+  try{
+    if (ENDPOINT.startsWith("PASTE_")) throw new Error("ENDPOINT not set");
+    await fetch(ENDPOINT, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(payload) });
+    $("main").innerHTML = `<div class="thanks"><h2 data-i18n="ok"></h2><p class="lead" data-i18n="okBody"></p><button class="submit" id="againBtn" style="max-width:260px"></button></div>`;
+    render();
+    $("againBtn").onclick = () => location.reload();
+  }catch(err){
+    console.error(err);
+    showMsg(t("errSend"), "err");
+    btn.disabled = false; btn.textContent = t("submit");
+  }
+});
+
+buildStatic(); render();
+</script>
+</body>
+</html>
