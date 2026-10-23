@@ -49,6 +49,10 @@
   .ref-row{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
   .ref-row b{white-space:nowrap}
   .ref-note{font-size:12px;color:var(--muted);margin-top:6px}
+  .amount{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .amount label{font-size:14px;color:var(--muted);width:100%}
+  .amount input{flex:1;min-width:120px}
+  .amount select{width:auto}
   .consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted)}
   .consent input{margin-top:4px}
   .submit{width:100%;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:16px;cursor:pointer}
@@ -104,6 +108,11 @@
           <div class="ref-note" id="fxNote" data-i18n="fxNote" hidden></div>
         </div>
         <div class="chips" id="priceOpts"></div>
+        <div class="amount">
+          <label for="amount" data-i18n="orAmount"></label>
+          <input id="amount" class="field" type="number" inputmode="decimal" min="0" step="any">
+          <select id="amountCur" class="field" aria-label="Currency"></select>
+        </div>
       </fieldset>
 
       <fieldset>
@@ -148,56 +157,56 @@ const LANGS = [
 
 /* 画面の表示文言 */
 const T = {
- en:{qPrice:"How much would you pay for one book?",refTitle:"Reference prices in Japan",refManga:"Manga volume (e.g. Shonen Jump comics)",refHard:"Hardcover book",pUnder:"Under {p}",pAbout:"About {p}",pOver:"More than {p}",pNotSure:"Not sure",fxNote:"Converted at today's approximate exchange rate",otherOpt:"Other",title:"Which books do you want to read?",lead:"Tell us your language and the books you'd love to read. It takes about one minute.",
+ en:{orAmount:"Or enter an amount",errAmount:"Please enter a valid amount.",qPrice:"How much would you pay for one book?",refTitle:"Reference prices in Japan",refManga:"Manga volume (e.g. Shonen Jump comics)",refHard:"Hardcover book",pUnder:"Under {p}",pAbout:"About {p}",pOver:"More than {p}",pNotSure:"Not sure",fxNote:"Converted at today's approximate exchange rate",otherOpt:"Other",title:"Which books do you want to read?",lead:"Tell us your language and the books you'd love to read. It takes about one minute.",
   qNative:"Your first language",choose:"Select…",otherLang:"Please type your language",qRead:"Languages you can read books in",multi:"(choose all that apply)",
   qCountry:"Country / region",optional:"(optional)",qBooks:"Books you want to read",booksHint:"(title and author)",title_ph:"Book title",author_ph:"Author",
   addBook:"+ Add another book",qComment:"Anything else?",consent:"I agree that my answers will be stored and used anonymously to choose which books to provide.",
   submit:"Send",sending:"Sending…",ok:"Thank you!",okBody:"Your answers have been received.",again:"Answer again",
   errNative:"Please select your first language.",errRead:"Please choose at least one reading language.",errBook:"Please enter at least one book title.",
   errConsent:"Please check the agreement box.",errSend:"Could not send. Please check your connection and try again.",remove:"Remove",footer:"No personal information such as name or email is collected."},
- "zh-Hans":{qPrice:"你愿意为一本书支付多少钱？",refTitle:"日本的参考价格",refManga:"漫画单行本（如 Jump Comics）",refHard:"精装书",pUnder:"低于{p}",pAbout:"约{p}",pOver:"高于{p}",pNotSure:"不确定",fxNote:"按当前大致汇率换算",otherOpt:"其他",title:"你想读哪些书？",lead:"告诉我们你使用的语言和想读的书，大约只需一分钟。",
+ "zh-Hans":{orAmount:"或直接输入金额",errAmount:"请输入有效的金额。",qPrice:"你愿意为一本书支付多少钱？",refTitle:"日本的参考价格",refManga:"漫画单行本（如 Jump Comics）",refHard:"精装书",pUnder:"低于{p}",pAbout:"约{p}",pOver:"高于{p}",pNotSure:"不确定",fxNote:"按当前大致汇率换算",otherOpt:"其他",title:"你想读哪些书？",lead:"告诉我们你使用的语言和想读的书，大约只需一分钟。",
   qNative:"你的母语",choose:"请选择…",otherLang:"请输入你的语言",qRead:"你能阅读书籍的语言",multi:"（可多选）",
   qCountry:"国家 / 地区",optional:"（选填）",qBooks:"想读的书",booksHint:"（书名和作者）",title_ph:"书名",author_ph:"作者",
   addBook:"+ 再添加一本",qComment:"其他意见",consent:"我同意我的回答将被匿名保存，并用于决定提供哪些书籍。",
   submit:"提交",sending:"正在提交…",ok:"谢谢！",okBody:"我们已收到你的回答。",again:"再次填写",
   errNative:"请选择你的母语。",errRead:"请至少选择一种阅读语言。",errBook:"请至少填写一本书名。",
   errConsent:"请勾选同意。",errSend:"提交失败，请检查网络后重试。",remove:"删除",footer:"本调查不收集姓名、邮箱等个人信息。"},
- "zh-Hant":{qPrice:"你願意為一本書支付多少錢？",refTitle:"日本的參考價格",refManga:"漫畫單行本（如 Jump Comics）",refHard:"精裝書",pUnder:"低於{p}",pAbout:"約{p}",pOver:"高於{p}",pNotSure:"不確定",fxNote:"依目前大約匯率換算",otherOpt:"其他",title:"你想讀哪些書？",lead:"告訴我們你使用的語言和想讀的書，大約只需一分鐘。",
+ "zh-Hant":{orAmount:"或直接輸入金額",errAmount:"請輸入有效的金額。",qPrice:"你願意為一本書支付多少錢？",refTitle:"日本的參考價格",refManga:"漫畫單行本（如 Jump Comics）",refHard:"精裝書",pUnder:"低於{p}",pAbout:"約{p}",pOver:"高於{p}",pNotSure:"不確定",fxNote:"依目前大約匯率換算",otherOpt:"其他",title:"你想讀哪些書？",lead:"告訴我們你使用的語言和想讀的書，大約只需一分鐘。",
   qNative:"你的母語",choose:"請選擇…",otherLang:"請輸入你的語言",qRead:"你能閱讀書籍的語言",multi:"（可複選）",
   qCountry:"國家 / 地區",optional:"（選填）",qBooks:"想讀的書",booksHint:"（書名和作者）",title_ph:"書名",author_ph:"作者",
   addBook:"+ 再新增一本",qComment:"其他意見",consent:"我同意我的回答將以匿名方式保存，並用於決定提供哪些書籍。",
   submit:"送出",sending:"傳送中…",ok:"謝謝！",okBody:"我們已收到你的回答。",again:"再次填寫",
   errNative:"請選擇你的母語。",errRead:"請至少選擇一種閱讀語言。",errBook:"請至少填寫一本書名。",
   errConsent:"請勾選同意。",errSend:"傳送失敗，請檢查網路後再試一次。",remove:"刪除",footer:"本調查不蒐集姓名、電子郵件等個人資料。"},
- ko:{qPrice:"책 한 권에 얼마까지 지불할 수 있나요?",refTitle:"일본 참고 가격",refManga:"만화 단행본 (예: 점프 코믹스)",refHard:"하드커버 도서",pUnder:"{p} 미만",pAbout:"약 {p}",pOver:"{p} 초과",pNotSure:"잘 모르겠음",fxNote:"현재 대략적인 환율로 환산",otherOpt:"기타",title:"어떤 책을 읽고 싶으신가요?",lead:"사용하는 언어와 읽고 싶은 책을 알려주세요. 약 1분 정도 걸립니다.",
+ ko:{orAmount:"또는 금액을 직접 입력",errAmount:"올바른 금액을 입력해 주세요.",qPrice:"책 한 권에 얼마까지 지불할 수 있나요?",refTitle:"일본 참고 가격",refManga:"만화 단행본 (예: 점프 코믹스)",refHard:"하드커버 도서",pUnder:"{p} 미만",pAbout:"약 {p}",pOver:"{p} 초과",pNotSure:"잘 모르겠음",fxNote:"현재 대략적인 환율로 환산",otherOpt:"기타",title:"어떤 책을 읽고 싶으신가요?",lead:"사용하는 언어와 읽고 싶은 책을 알려주세요. 약 1분 정도 걸립니다.",
   qNative:"모국어",choose:"선택하세요…",otherLang:"언어를 입력해 주세요",qRead:"책을 읽을 수 있는 언어",multi:"(복수 선택 가능)",
   qCountry:"국가 / 지역",optional:"(선택)",qBooks:"읽고 싶은 책",booksHint:"(제목과 저자)",title_ph:"책 제목",author_ph:"저자",
   addBook:"+ 책 추가하기",qComment:"기타 의견",consent:"답변이 익명으로 저장되어 제공할 책을 정하는 데 사용되는 것에 동의합니다.",
   submit:"보내기",sending:"보내는 중…",ok:"감사합니다!",okBody:"답변이 접수되었습니다.",again:"다시 응답하기",
   errNative:"모국어를 선택해 주세요.",errRead:"읽을 수 있는 언어를 하나 이상 선택해 주세요.",errBook:"책 제목을 하나 이상 입력해 주세요.",
   errConsent:"동의란에 체크해 주세요.",errSend:"전송하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.",remove:"삭제",footer:"이름이나 이메일 등 개인정보는 수집하지 않습니다."},
- es:{qPrice:"¿Cuánto pagarías por un libro?",refTitle:"Precios de referencia en Japón",refManga:"Tomo de manga (p. ej., Jump Comics)",refHard:"Libro de tapa dura",pUnder:"Menos de {p}",pAbout:"Unos {p}",pOver:"Más de {p}",pNotSure:"No estoy seguro/a",fxNote:"Convertido al tipo de cambio aproximado actual",otherOpt:"Otro",title:"¿Qué libros te gustaría leer?",lead:"Cuéntanos tu idioma y los libros que te gustaría leer. Solo toma un minuto.",
+ es:{orAmount:"O escribe una cantidad",errAmount:"Introduce una cantidad válida.",qPrice:"¿Cuánto pagarías por un libro?",refTitle:"Precios de referencia en Japón",refManga:"Tomo de manga (p. ej., Jump Comics)",refHard:"Libro de tapa dura",pUnder:"Menos de {p}",pAbout:"Unos {p}",pOver:"Más de {p}",pNotSure:"No estoy seguro/a",fxNote:"Convertido al tipo de cambio aproximado actual",otherOpt:"Otro",title:"¿Qué libros te gustaría leer?",lead:"Cuéntanos tu idioma y los libros que te gustaría leer. Solo toma un minuto.",
   qNative:"Tu lengua materna",choose:"Selecciona…",otherLang:"Escribe tu idioma",qRead:"Idiomas en los que puedes leer libros",multi:"(elige todos los que correspondan)",
   qCountry:"País / región",optional:"(opcional)",qBooks:"Libros que quieres leer",booksHint:"(título y autor)",title_ph:"Título del libro",author_ph:"Autor",
   addBook:"+ Añadir otro libro",qComment:"¿Algo más?",consent:"Acepto que mis respuestas se guarden y se usen de forma anónima para elegir qué libros ofrecer.",
   submit:"Enviar",sending:"Enviando…",ok:"¡Gracias!",okBody:"Hemos recibido tus respuestas.",again:"Responder de nuevo",
   errNative:"Selecciona tu lengua materna.",errRead:"Elige al menos un idioma de lectura.",errBook:"Escribe al menos el título de un libro.",
   errConsent:"Marca la casilla de aceptación.",errSend:"No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.",remove:"Quitar",footer:"No recopilamos datos personales como nombre o correo electrónico."},
- pt:{qPrice:"Quanto você pagaria por um livro?",refTitle:"Preços de referência no Japão",refManga:"Volume de mangá (ex.: Jump Comics)",refHard:"Livro de capa dura",pUnder:"Menos de {p}",pAbout:"Cerca de {p}",pOver:"Mais de {p}",pNotSure:"Não sei",fxNote:"Convertido pela taxa de câmbio aproximada atual",otherOpt:"Outro",title:"Quais livros você quer ler?",lead:"Conte-nos seu idioma e os livros que gostaria de ler. Leva cerca de um minuto.",
+ pt:{orAmount:"Ou digite um valor",errAmount:"Digite um valor válido.",qPrice:"Quanto você pagaria por um livro?",refTitle:"Preços de referência no Japão",refManga:"Volume de mangá (ex.: Jump Comics)",refHard:"Livro de capa dura",pUnder:"Menos de {p}",pAbout:"Cerca de {p}",pOver:"Mais de {p}",pNotSure:"Não sei",fxNote:"Convertido pela taxa de câmbio aproximada atual",otherOpt:"Outro",title:"Quais livros você quer ler?",lead:"Conte-nos seu idioma e os livros que gostaria de ler. Leva cerca de um minuto.",
   qNative:"Sua língua materna",choose:"Selecione…",otherLang:"Digite seu idioma",qRead:"Idiomas em que você consegue ler livros",multi:"(escolha todos que se aplicam)",
   qCountry:"País / região",optional:"(opcional)",qBooks:"Livros que você quer ler",booksHint:"(título e autor)",title_ph:"Título do livro",author_ph:"Autor",
   addBook:"+ Adicionar outro livro",qComment:"Algo mais?",consent:"Concordo que minhas respostas sejam armazenadas e usadas de forma anônima para escolher quais livros oferecer.",
   submit:"Enviar",sending:"Enviando…",ok:"Obrigado!",okBody:"Recebemos suas respostas.",again:"Responder novamente",
   errNative:"Selecione sua língua materna.",errRead:"Escolha pelo menos um idioma de leitura.",errBook:"Informe pelo menos o título de um livro.",
   errConsent:"Marque a caixa de concordância.",errSend:"Não foi possível enviar. Verifique sua conexão e tente novamente.",remove:"Remover",footer:"Não coletamos dados pessoais como nome ou e-mail."},
- fr:{qPrice:"Combien paieriez-vous pour un livre ?",refTitle:"Prix de référence au Japon",refManga:"Volume de manga (ex. : Jump Comics)",refHard:"Livre relié",pUnder:"Moins de {p}",pAbout:"Environ {p}",pOver:"Plus de {p}",pNotSure:"Je ne sais pas",fxNote:"Converti au taux de change approximatif du jour",otherOpt:"Autre",title:"Quels livres aimeriez-vous lire ?",lead:"Indiquez-nous votre langue et les livres que vous aimeriez lire. Cela prend environ une minute.",
+ fr:{orAmount:"Ou saisissez un montant",errAmount:"Veuillez saisir un montant valide.",qPrice:"Combien paieriez-vous pour un livre ?",refTitle:"Prix de référence au Japon",refManga:"Volume de manga (ex. : Jump Comics)",refHard:"Livre relié",pUnder:"Moins de {p}",pAbout:"Environ {p}",pOver:"Plus de {p}",pNotSure:"Je ne sais pas",fxNote:"Converti au taux de change approximatif du jour",otherOpt:"Autre",title:"Quels livres aimeriez-vous lire ?",lead:"Indiquez-nous votre langue et les livres que vous aimeriez lire. Cela prend environ une minute.",
   qNative:"Votre langue maternelle",choose:"Choisir…",otherLang:"Saisissez votre langue",qRead:"Langues dans lesquelles vous lisez des livres",multi:"(plusieurs choix possibles)",
   qCountry:"Pays / région",optional:"(facultatif)",qBooks:"Livres que vous voulez lire",booksHint:"(titre et auteur)",title_ph:"Titre du livre",author_ph:"Auteur",
   addBook:"+ Ajouter un autre livre",qComment:"Autre chose ?",consent:"J'accepte que mes réponses soient enregistrées et utilisées de manière anonyme pour choisir les livres proposés.",
   submit:"Envoyer",sending:"Envoi…",ok:"Merci !",okBody:"Vos réponses ont bien été reçues.",again:"Répondre à nouveau",
   errNative:"Veuillez choisir votre langue maternelle.",errRead:"Veuillez choisir au moins une langue de lecture.",errBook:"Veuillez saisir au moins un titre.",
   errConsent:"Veuillez cocher la case d'accord.",errSend:"Échec de l'envoi. Vérifiez votre connexion et réessayez.",remove:"Supprimer",footer:"Aucune donnée personnelle (nom, e-mail) n'est collectée."},
- ja:{qPrice:"1冊いくらなら買いたいですか？",refTitle:"日本での参考価格",refManga:"漫画単行本（例：ジャンプコミックス）",refHard:"ハードカバー",pUnder:"{p}未満",pAbout:"{p}くらい",pOver:"{p}より高くてもよい",pNotSure:"わからない",fxNote:"現在のおおよその為替レートで換算",otherOpt:"その他",title:"どんな本を読みたいですか？",lead:"あなたの言語と、読みたい本を教えてください。1分ほどで終わります。",
+ ja:{orAmount:"または金額を入力",errAmount:"正しい金額を入力してください。",qPrice:"1冊いくらなら買いたいですか？",refTitle:"日本での参考価格",refManga:"漫画単行本（例：ジャンプコミックス）",refHard:"ハードカバー",pUnder:"{p}未満",pAbout:"{p}くらい",pOver:"{p}より高くてもよい",pNotSure:"わからない",fxNote:"現在のおおよその為替レートで換算",otherOpt:"その他",title:"どんな本を読みたいですか？",lead:"あなたの言語と、読みたい本を教えてください。1分ほどで終わります。",
   qNative:"あなたの第一言語",choose:"選択してください…",otherLang:"言語を入力してください",qRead:"本を読める言語",multi:"（複数選択可）",
   qCountry:"国・地域",optional:"（任意）",qBooks:"読みたい本",booksHint:"（書名と著者）",title_ph:"書名",author_ph:"著者",
   addBook:"＋ 本を追加",qComment:"その他ご意見",consent:"回答が匿名で保存され、提供する本を決めるために使われることに同意します。",
@@ -257,6 +266,10 @@ function buildStatic(){
     if (cb) cb.checked = true;
   };
   $("addBook").onclick = () => addBook(true);
+  buildCurrencies();
+  $("amountCur").addEventListener("change", e => e.target.dataset.touched = "1");
+  $("amount").addEventListener("input", () => { if ($("amount").value) document.querySelectorAll("#priceOpts input").forEach(i => i.checked = false); });
+  $("priceOpts").addEventListener("change", () => { $("amount").value = ""; });
   addBook(); addBook();
 }
 
@@ -272,7 +285,8 @@ function addBook(focus){
 }
 
 /* ===== 価格表示（円＋閲覧者の地域通貨の目安） ===== */
-let fx = null; // {cur, rate}  1円あたりの現地通貨
+let fx = null;    // {cur, rate}  1円あたりの現地通貨
+let rates = null; // 全通貨のレート（1円あたり）
 const REGION_CUR = {US:"USD",CA:"CAD",GB:"GBP",AU:"AUD",NZ:"NZD",KR:"KRW",CN:"CNY",TW:"TWD",HK:"HKD",SG:"SGD",
   TH:"THB",VN:"VND",ID:"IDR",PH:"PHP",MY:"MYR",IN:"INR",BR:"BRL",MX:"MXN",AR:"ARS",CL:"CLP",CO:"COP",PE:"PEN",
   CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",TR:"TRY",RU:"RUB",SA:"SAR",AE:"AED",EG:"EGP",ZA:"ZAR",
@@ -287,7 +301,7 @@ async function loadFx(){
   const cur = guessCurrency();
   try{
     const r = await fetch("https://open.er-api.com/v6/latest/JPY"); const j = await r.json();
-    if (j && j.rates && j.rates[cur]) { fx = {cur, rate:j.rates[cur]}; renderPrices(); }
+    if (j && j.rates) { rates = j.rates; if (j.rates[cur]) fx = {cur, rate:j.rates[cur]}; buildCurrencies(); renderPrices(); }
   }catch(e){ /* 取得できなければ円のみ表示 */ }
 }
 function yen(n){
@@ -299,6 +313,21 @@ function yen(n){
   }
   return s;
 }
+function buildCurrencies(){
+  const sel = $("amountCur"), keep = sel.value;
+  const list = ["JPY"];
+  [fx && fx.cur, "USD", "EUR"].forEach(c => { if (c && !list.includes(c) && (!rates || rates[c])) list.push(c); });
+  if (!rates) list.length = 1;          // レート未取得なら円のみ
+  sel.innerHTML = ""; list.forEach(c => sel.append(new Option(c, c)));
+  sel.value = (sel.dataset.touched && list.includes(keep)) ? keep : (fx ? fx.cur : "JPY");
+}
+function amountInYen(){
+  const v = parseFloat($("amount").value), c = $("amountCur").value;
+  if (!(v > 0)) return null;
+  if (c === "JPY") return Math.round(v);
+  return rates && rates[c] ? Math.round(v / rates[c]) : null;
+}
+
 function renderPrices(){
   $("refP1").textContent = yen(REF_MANGA);
   $("refP2").textContent = yen(REF_HARD);
@@ -326,6 +355,9 @@ $("form").addEventListener("submit", async e => {
   if (!native) return showMsg(t("errNative"), "err");
   if (!reading.length) return showMsg(t("errRead"), "err");
   if (!books.length) return showMsg(t("errBook"), "err");
+  const amtRaw = $("amount").value.trim();
+  const amt = parseFloat(amtRaw);
+  if (amtRaw && !(amt > 0 && amt < 10000000)) return showMsg(t("errAmount"), "err");
   if (!$("consent").checked) return showMsg(t("errConsent"), "err");
 
   const payload = {
@@ -335,6 +367,9 @@ $("form").addEventListener("submit", async e => {
     books,
     price: (document.querySelector("#priceOpts input:checked")||{}).value || "",
     priceShown: fx ? fx.cur : "JPY",
+    amount: amtRaw ? amt : "",
+    amountCur: amtRaw ? $("amountCur").value : "",
+    amountJPY: amtRaw ? amountInYen() : "",
     comment: $("comment").value.trim(),
     uiLang: ui,
     browserLang: navigator.language || "",
